@@ -24,8 +24,18 @@
 
 ## Backend Shild
 
-1. Database up datache mode
+1. Clone repository
+2. Execute:
+ ```
+ pnpm install
+ ```
+3. Copy env.template & rename to .env
+4. configure enviroments variable on file .env
+5. Database up datache mode:
 ```
 docker-compose up -d
 ```
-
+6. start database:
+ ```
+ pnpm start:dev
+ ```
