@@ -14,6 +14,7 @@ export class Invoice {
     })
     total_invoice: number;
 
+    @Column('text')
     account: string;
 
 }
