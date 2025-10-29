@@ -14,5 +14,20 @@ export class Product {
     @Column('text')
     description: string;
 
+    @Column('text',{
+        array: true,
+    })
+    size: string[];
+
+    @Column('float',{
+        default: 0,
+    })
+    price: number;
+
+    @Column('boolean',{
+        default: true,
+    })
+    inventoriable: boolean;
+
     
 }
