@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -8,12 +8,11 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class ProductsService {
 
-  private readonly logger = new Logger('ProductsService');
-
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
   ) {}
+
   async create(createProductDto: CreateProductDto) {
 
     try {
@@ -23,8 +22,7 @@ export class ProductsService {
       return product;
       
     } catch (error) {
-      //this.logger.error('Error creating product', error.stack);
-      this.logger.error('Error creating product', error);
+      console.log(error);
       throw new InternalServerErrorException('Ayuda!!!');
       
     }
@@ -32,18 +30,33 @@ export class ProductsService {
   }
 
   findAll() {
-    return `This action returns all products`;
+    return this.productRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string) {
+    
+    const product = await this.productRepository.findOneBy({id});
+    if (!product) {
+      throw new NotFoundException(`Product with id ${id} not found`);
+    }
+    return product;
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
     return `This action updates a #${id} product`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string) {
+    const product = await this.findOne(id);
+    await this.productRepository.remove(product); 
+  }
+
+  private handleDBExceptions(error:any){
+    if (error.code === '23505' ) {
+      throw new BadRequestException(error.detail);
+    }
+    
+    this.logger.error(error);
+    throw new InternalServerErrorException('Unexpected error, check server logs');
   }
 }
